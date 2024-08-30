@@ -118,5 +118,6 @@ class TevatronTrainingArguments(TrainingArguments):
     do_encode: bool = field(default=False, metadata={"help": "run the encoding loop"})
 
     grad_cache: bool = field(default=False, metadata={"help": "Use gradient cache update"})
-    gc_q_chunk_size: int = field(default=4)
-    gc_p_chunk_size: int = field(default=32)
+    gc_q_chunk_size: int = field(default=1)
+    gc_p_chunk_size: int = field(default=1)
+    device: str = field(default='cpu')
