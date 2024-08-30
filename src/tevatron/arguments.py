@@ -120,4 +120,4 @@ class TevatronTrainingArguments(TrainingArguments):
     grad_cache: bool = field(default=False, metadata={"help": "Use gradient cache update"})
     gc_q_chunk_size: int = field(default=1)
     gc_p_chunk_size: int = field(default=1)
-    device: str = field(default='cpu')
+    # device: str = field(default='cpu')
