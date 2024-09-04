@@ -15,3 +15,5 @@ python examples/repllama/train.py --output_dir model_repllama --model_name_or_pa
 # EMBEDDING_OUTPUT_DIR=EmbeddingOutput
 
 # python -m tevatron.retriever.driver.encode --output_dir=temp --model_name_or_path retriever-mistral/checkpoint-3836 --lora_name_or_path retriever-mistral --lora --query_prefix "Query: " --passage_prefix "Passage: " --bf16 --pooling eos --append_eos_token --normalize --encode_is_query --per_device_eval_batch_size 128 --query_max_len 32 --passage_max_len 156 --dataset_name Tevatron/msmarco-passage --dataset_split dev --encode_output_path $EMBEDDING_OUTPUT_DIR/query-dev.pkl
+
+# Chạy encode

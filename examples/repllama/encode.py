@@ -46,8 +46,8 @@ def main():
         datefmt="%m/%d/%Y %H:%M:%S",
         level=logging.INFO if training_args.local_rank in [-1, 0] else logging.WARN,
     )
-    print('===='*20)
-    print("0.1")
+    # print('===='*20)
+    # print("0.1")
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.tokenizer_name if model_args.tokenizer_name else model_args.model_name_or_path,
         cache_dir=model_args.cache_dir
@@ -55,8 +55,8 @@ def main():
     tokenizer.pad_token_id = tokenizer.unk_token_id
     tokenizer.pad_token = tokenizer.unk_token
     tokenizer.padding_side = "right"
-    print('===='*20)
-    print("0.2")
+    # print('===='*20)
+    # print("0.2")
     model = RepLLaMA.load(
         model_name_or_path=model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
@@ -71,8 +71,8 @@ def main():
                                          cache_dir=data_args.data_cache_dir or model_args.cache_dir)
     encode_dataset = EncodeDataset(encode_dataset.process(data_args.encode_num_shard, data_args.encode_shard_index),
                                    tokenizer, max_len=text_max_length)
-    print('===='*20)
-    print("0.3")
+    # print('===='*20)
+    # print("0.3")
     encode_loader = DataLoader(
         encode_dataset,
         batch_size=training_args.per_device_eval_batch_size,
@@ -85,24 +85,24 @@ def main():
         drop_last=False,
         num_workers=training_args.dataloader_num_workers,
     )
-    print('===='*20)
-    print("0.4")
+    # print('===='*20)
+    # print("0.4")
     encoded = []
     lookup_indices = []
     # model = model.to(training_args.device)
     model.eval()
-    print('===='*20)
-    print(1)
+    # print('===='*20)
+    # print(1)
     for (batch_ids, batch) in tqdm(encode_loader):
         lookup_indices.extend(batch_ids)
-        print('===='*20)
-        print(2)
+        # print('===='*20)
+        # print(2)
         with torch.cuda.amp.autocast() if training_args.fp16 else nullcontext():
             with torch.no_grad():
                 for k, v in batch.items():
                     batch[k] = v.to(training_args.device)
-                print('===='*20)
-                print(3)
+                # print('===='*20)
+                # print(3)
                 if data_args.encode_is_qry:
                     model_output = model(query=batch)
                     encoded.append(model_output.q_reps.cpu().detach().numpy())
