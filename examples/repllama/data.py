@@ -55,6 +55,7 @@ class TrainPreProcessor:
         query = self.tokenizer.encode('query: ' + example['query'],
                                       add_special_tokens=False,
                                       max_length=self.query_max_length-3,
+                                      padding=True,   # 11111111111111
                                       truncation=True)
         positives = []
         for pos in example['positive_passages']:

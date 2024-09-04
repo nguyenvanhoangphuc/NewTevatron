@@ -9,8 +9,7 @@ from transformers import (
     set_seed,
 )
 
-from tevatron.arguments import ModelArguments, DataArguments, \
-    TevatronTrainingArguments as TrainingArguments
+from tevatron.arguments import ModelArguments, DataArguments, TevatronTrainingArguments as TrainingArguments
 from trainer import TevatronTrainer
 from data import HFTrainDataset, TrainDataset, TrainCollator
 from repllama import RepLLaMA
@@ -77,13 +76,14 @@ def main():
 
     train_dataset = HFTrainDataset(tokenizer=tokenizer, data_args=data_args,
                                    cache_dir=data_args.data_cache_dir or model_args.cache_dir)
-    if training_args.local_rank > 0:
-        print("Waiting for main process to perform the mapping")
-        torch.distributed.barrier()
+    
+    # if training_args.local_rank > 0:
+    #     print("Waiting for main process to perform the mapping")
+    #     torch.distributed.barrier()
     train_dataset = TrainDataset(data_args, train_dataset.process(), tokenizer)
-    if training_args.local_rank == 0:
-        print("Loading results from main process")
-        torch.distributed.barrier()
+    # if training_args.local_rank == 0:
+    #     print("Loading results from main process")
+    #     torch.distributed.barrier()
 
     trainer_cls = TevatronTrainer
     trainer = trainer_cls(

@@ -5,6 +5,7 @@ from transformers import LlamaModel, PreTrainedModel
 import logging
 from peft import LoraConfig, get_peft_model, PeftModel, TaskType
 from tevatron.modeling.encoder import EncoderModel
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 logger = logging.getLogger(__name__)
 
@@ -50,8 +51,9 @@ class RepLLaMA(EncoderModel):
     def compute_similarity(self, q_reps, p_reps):
         return torch.matmul(q_reps, p_reps.transpose(0, 1)) / 0.01
     
-    def gradient_checkpointing_enable(self):
-        self.lm_q.base_model.gradient_checkpointing_enable()
+    def gradient_checkpointing_enable(self, gradient_checkpointing_kwargs):
+        self.lm_q.base_model.gradient_checkpointing_enable(gradient_checkpointing_kwargs)
+        self.lm_p.base_model.gradient_checkpointing_enable(gradient_checkpointing_kwargs)
 
     
     @staticmethod
@@ -62,8 +64,6 @@ class RepLLaMA(EncoderModel):
         model = get_peft_model(base_model, config)
         model.print_trainable_parameters()
         return model
-    
-
     @classmethod
     def build(
             cls,
@@ -71,7 +71,22 @@ class RepLLaMA(EncoderModel):
             train_args,
             **hf_kwargs,
     ):
-        base_model = LlamaModel.from_pretrained(model_args.model_name_or_path, **hf_kwargs)
+        print("====" * 20)
+        print("1.x")
+        # Configure quantization
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+        
+        # Load base model with quantization in 8-bit
+        base_model = LlamaModel.from_pretrained(
+            model_args.model_name_or_path,
+            quantization_config=quantization_config,
+            device_map='auto',
+            output_hidden_states=True,  # Ensure the model returns hidden states
+            use_cache=False,
+            **hf_kwargs  # Pass any additional keyword arguments
+        )
+        print("****" * 20)
+
         if train_args.gradient_checkpointing:
             base_model.enable_input_require_grads()
         
@@ -81,14 +96,15 @@ class RepLLaMA(EncoderModel):
         peft_config = LoraConfig(
             base_model_name_or_path=model_args.model_name_or_path,
             task_type=TaskType.FEATURE_EXTRACTION,
-            r=32,
-            lora_alpha=64,
+            r=8,
+            lora_alpha=16,
             lora_dropout=0.1,
             target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
             inference_mode=False
         )
 
         hf_model = get_peft_model(base_model, peft_config)
+
         model = cls(
             lm_q=hf_model,
             lm_p=hf_model,
@@ -96,6 +112,96 @@ class RepLLaMA(EncoderModel):
             untie_encoder=False
         )
         return model
+
+    # @classmethod
+    # def build(
+    #         cls,
+    #         model_args,
+    #         train_args,
+    #         **hf_kwargs,
+    # ):
+    #     print("===="*20)
+    #     print("1.x")
+    #     # Configure quantization
+    #     quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+        
+    #     # Load base model with quantization in 8-bit
+    #     base_model = LlamaModel.from_pretrained(
+    #         model_args.model_name_or_path,
+    #         quantization_config=quantization_config,
+    #         device_map='auto',
+    #         output_hidden_states=True,  # Ensure the model returns hidden states
+    #         use_cache=False
+    #     )
+    #     print("****"*20)
+    #     if train_args.gradient_checkpointing:
+    #         base_model.enable_input_require_grads()
+        
+    #     if base_model.config.pad_token_id is None:
+    #         base_model.config.pad_token_id = 0
+
+    #     peft_config = LoraConfig(
+    #         base_model_name_or_path=model_args.model_name_or_path,
+    #         task_type=TaskType.FEATURE_EXTRACTION,
+    #         r=8,
+    #         lora_alpha=16,
+    #         lora_dropout=0.1,
+    #         target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
+    #         inference_mode=False
+    #     )
+
+    #     hf_model = get_peft_model(base_model, peft_config)
+
+    #     model = cls(
+    #         lm_q=hf_model,
+    #         lm_p=hf_model,
+    #         pooler=None,
+    #         untie_encoder=False
+    #     )
+    #     return model
+    # @classmethod
+    # def build(
+    #         cls,
+    #         model_args,
+    #         train_args,
+    #         **hf_kwargs,
+    #     ):
+    #     # Khởi tạo mô hình cơ bản
+    #     base_model = LlamaModel.from_pretrained(model_args.model_name_or_path, **hf_kwargs)
+        
+    #     # Sử dụng gradient checkpointing để tiết kiệm bộ nhớ trong huấn luyện
+    #     if train_args.gradient_checkpointing:
+    #         base_model.gradient_checkpointing_enable()  # Sử dụng phương thức tối ưu hơn
+    #         base_model.enable_input_require_grads()
+
+    #     # Thiết lập giá trị pad_token_id nếu chưa được thiết lập
+    #     if base_model.config.pad_token_id is None:
+    #         base_model.config.pad_token_id = 0
+
+    #     # Cấu hình LoRA để tối ưu bộ nhớ
+    #     peft_config = LoraConfig(
+    #         base_model_name_or_path=model_args.model_name_or_path,
+    #         task_type=TaskType.FEATURE_EXTRACTION,
+    #         r=2,  # Giảm rank để tiết kiệm bộ nhớ
+    #         lora_alpha=8,  # Giảm alpha
+    #         lora_dropout=0.1,  # Giữ nguyên dropout để đảm bảo không overfitting
+    #         target_modules=["q_proj", "v_proj"],  # Chọn ít module hơn để fine-tune
+    #         inference_mode=True  # Bật chế độ inference để tiết kiệm bộ nhớ
+    #     )
+
+    #     # Áp dụng cấu hình LoRA vào mô hình cơ bản
+    #     hf_model = get_peft_model(base_model, peft_config)
+
+    #     # Khởi tạo lớp với mô hình được tối ưu
+    #     model = cls(
+    #         lm_q=hf_model,
+    #         lm_p=hf_model,
+    #         pooler=None,
+    #         untie_encoder=False
+    #     )
+
+    #     return model
+
     
     @classmethod
     def load(
