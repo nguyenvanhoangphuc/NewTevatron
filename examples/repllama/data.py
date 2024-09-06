@@ -69,7 +69,7 @@ class TrainPreProcessor:
         self.separator = separator
 
     def __call__(self, example):
-        print("example", example)
+        # print("example", example)
         query = self.tokenizer.encode('query: ' + example['query'],
                                       add_special_tokens=False,
                                       max_length=self.query_max_length-3,
@@ -243,8 +243,6 @@ class TrainDataset(Dataset):
 
         negative_size = self.data_args.train_n_passages - 1
         if len(group_negatives) > negative_size:
-            print("===="*20)
-            print("en(group_negatives) < negative_")
             negs = random.choices(group_negatives, k=negative_size)
         elif self.data_args.train_n_passages == 1:
             print("===="*20)

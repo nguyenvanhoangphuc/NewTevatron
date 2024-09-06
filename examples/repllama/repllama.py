@@ -45,7 +45,7 @@ class RepLLaMA(EncoderModel):
         print("===="*20)
         print("qry", qry)
         qry_out = self.lm_q(**qry, output_hidden_states=True)
-        print("qry_out", qry_out)
+        # print("qry_out", qry_out)
         # print("qry_out.last_hidden_state.shape", qry_out.last_hidden_state.shape)
         # print("len(qry_out.hidden_states)", len(qry_out.hidden_states))
         # print("qry_out.hidden_states.shape", qry_out.hidden_states[-1].shape)
@@ -97,12 +97,8 @@ class RepLLaMA(EncoderModel):
         
         # Load base model with quantization in 8-bit
         base_model = LlamaModel.from_pretrained(
-            model_args.model_name_or_path,
-            quantization_config=quantization_config,
-            device_map='auto',
-            output_hidden_states=True,  # Ensure the model returns hidden states
-            use_cache=False,
-            **hf_kwargs  # Pass any additional keyword arguments
+            os.path.join(os.getcwd(), "model_repllama/checkpoint-10"),
+            quantization_config = quantization_config
         )
         print("****" * 20)
 
@@ -112,19 +108,34 @@ class RepLLaMA(EncoderModel):
         if base_model.config.pad_token_id is None:
             base_model.config.pad_token_id = 0
 
-        peft_config = LoraConfig(
-            base_model_name_or_path=model_args.model_name_or_path,
-            task_type=TaskType.FEATURE_EXTRACTION,
-            r=8,
-            lora_alpha=16,
-            lora_dropout=0.1,
-            target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
-            inference_mode=False
-        )
+        # peft_config = LoraConfig(
+        #     base_model_name_or_path=os.path.join(os.getcwd(), "model_repllama/checkpoint-14600"), #model_args.model_name_or_path
+        #     task_type=TaskType.FEATURE_EXTRACTION,
+        #     r=8,
+        #     lora_alpha=16,
+        #     lora_dropout=0.1,
+        #     target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
+        #     inference_mode=False
+        # )
+        
+        config = LoraConfig.from_pretrained(os.path.join(os.getcwd(), "model_repllama/checkpoint-10"))
 
-        hf_model = get_peft_model(base_model, peft_config)
+
+        hf_model = PeftModel.from_pretrained(base_model, os.path.join(os.getcwd(), "model_repllama/checkpoint-10"), config=config, is_trainable=True)
+        print("this")
+
+        # hf_model = hf_model.merge_and_unload()
+
+
         print("===="*20)
         print("hf_model", hf_model)
+
+        # In tất cả các tham số của mô hình
+        for name, param in hf_model.named_parameters():
+            print(f"Parameter Name: {name}")
+            print(f" - Shape: {param.shape}")
+            print(f" - Requires Grad: {param.requires_grad}")
+            print(f" - Values: {param.data}\n")
 
         model = cls(
             lm_q=hf_model,
@@ -232,36 +243,44 @@ class RepLLaMA(EncoderModel):
     ):
         # Configure quantization
         quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+        
         # Load base model with quantization in 8-bit
         base_model = LlamaModel.from_pretrained(
-            model_name_or_path,
-            quantization_config=quantization_config,
-            device_map='auto',
-            output_hidden_states=True,  # Ensure the model returns hidden states
-            use_cache=False,
-            **hf_kwargs  # Pass any additional keyword arguments
+            os.path.join(os.getcwd(), "model_repllama/checkpoint-10"),
+            quantization_config = quantization_config
         )
-        peft_config = LoraConfig(
-            base_model_name_or_path=model_name_or_path,
-            task_type=TaskType.FEATURE_EXTRACTION,
-            r=8,
-            lora_alpha=16,
-            lora_dropout=0.1,
-            target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
-            inference_mode=True   # False
-        )
+        print("****" * 20)
+        
+        if base_model.config.pad_token_id is None:
+            base_model.config.pad_token_id = 0
 
-        hf_model = get_peft_model(base_model, peft_config)
+        # peft_config = LoraConfig(
+        #     base_model_name_or_path=os.path.join(os.getcwd(), "model_repllama/checkpoint-14600"), #model_args.model_name_or_path
+        #     task_type=TaskType.FEATURE_EXTRACTION,
+        #     r=8,
+        #     lora_alpha=16,
+        #     lora_dropout=0.1,
+        #     target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
+        #     inference_mode=False
+        # )
+        
+        config = LoraConfig.from_pretrained(os.path.join(os.getcwd(), "model_repllama/checkpoint-10"))
+
+
+        hf_model = PeftModel.from_pretrained(base_model, os.path.join(os.getcwd(), "model_repllama/checkpoint-10"), config=config, is_trainable=True)
+        print("this")
+
+        # hf_model = hf_model.merge_and_unload()
 
         print("===="*20)
         print("hf_model", hf_model)
 
-        # config = LoraConfig.from_pretrained(model_name_or_path)
-        # base_model = LlamaModel.from_pretrained(config.base_model_name_or_path)
-        if base_model.config.pad_token_id is None:
-            base_model.config.pad_token_id = 0
-        # hf_model = PeftModel.from_pretrained(base_model, model_name_or_path, config=config, is_trainable=True)
-        # hf_model = hf_model.merge_and_unload()
+        # In tất cả các tham số của mô hình
+        for name, param in hf_model.named_parameters():
+            print(f"Parameter Name: {name}")
+            print(f" - Shape: {param.shape}")
+            print(f" - Requires Grad: {param.requires_grad}")
+            print(f" - Values: {param.data}\n")
         model = cls(
             lm_q=hf_model,
             lm_p=hf_model,
@@ -271,4 +290,11 @@ class RepLLaMA(EncoderModel):
         return model
 
     def save(self, output_dir: str):
+        print("self.lm_q.save_pretrained(output_dir)")
+        # In tất cả các tham số của mô hình
+        for name, param in self.lm_q.named_parameters():
+            print(f"Parameter Name: {name}")
+            print(f" - Shape: {param.shape}")
+            print(f" - Requires Grad: {param.requires_grad}")
+            print(f" - Values: {param.data}\n")
         self.lm_q.save_pretrained(output_dir)

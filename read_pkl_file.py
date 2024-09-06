@@ -21,7 +21,7 @@ import pickle
 # print(len(data[1][0]))
 
 # Đường dẫn tới file pickle query
-file_path = './beir_embedding_scifact/corpus_scifact.pkl'
+file_path = './beir_embedding_scifact_new/queries_scifact.pkl'
 
 # Mở file pickle và đọc nội dung
 with open(file_path, 'rb') as file:
