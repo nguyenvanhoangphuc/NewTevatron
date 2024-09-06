@@ -3,9 +3,11 @@ import torch.nn as nn
 from torch import Tensor
 from transformers import LlamaModel, PreTrainedModel
 import logging
-from peft import LoraConfig, get_peft_model, PeftModel, TaskType
+from peft import LoraConfig, get_peft_model, PeftModel, TaskType, PeftConfig
 from tevatron.modeling.encoder import EncoderModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
+import math
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +42,21 @@ class RepLLaMA(EncoderModel):
     def encode_query(self, qry):
         if qry is None:
             return None
+        print("===="*20)
+        print("qry", qry)
         qry_out = self.lm_q(**qry, output_hidden_states=True)
+        # print("qry_out", qry_out)
+        # print("qry_out.last_hidden_state.shape", qry_out.last_hidden_state.shape)
+        # print("len(qry_out.hidden_states)", len(qry_out.hidden_states))
+        # print("qry_out.hidden_states.shape", qry_out.hidden_states[-1].shape)
+        # print("qry_out.last_hidden_state", qry_out.last_hidden_state)
+        # print("qry_out.hidden_states", qry_out.hidden_states[-1])
         q_hidden = qry_out.hidden_states[-1]
+        # print("q_hidden", q_hidden)
+        # if math.isnan(q_hidden[0]): 
+        #     # print("q_hidden[0]", q_hidden[0])
+        #     print("q_hidden[0].shape", q_hidden[0].shape)
+        
         attention_mask = qry['attention_mask']
         # q_reps is the last token representation that is not padding
         sequence_lengths = attention_mask.sum(dim=1)
@@ -107,6 +122,7 @@ class RepLLaMA(EncoderModel):
         )
 
         hf_model = get_peft_model(base_model, peft_config)
+        print("hf_model", hf_model)
 
         model = cls(
             lm_q=hf_model,
@@ -230,7 +246,7 @@ class RepLLaMA(EncoderModel):
             lora_alpha=16,
             lora_dropout=0.1,
             target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
-            inference_mode=False
+            inference_mode=True   # False
         )
 
         hf_model = get_peft_model(base_model, peft_config)
@@ -240,7 +256,7 @@ class RepLLaMA(EncoderModel):
         if base_model.config.pad_token_id is None:
             base_model.config.pad_token_id = 0
         # hf_model = PeftModel.from_pretrained(base_model, model_name_or_path, config=config, is_trainable=True)
-        hf_model = hf_model.merge_and_unload()
+        # hf_model = hf_model.merge_and_unload()
         model = cls(
             lm_q=hf_model,
             lm_p=hf_model,

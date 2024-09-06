@@ -32,7 +32,7 @@ class TrainDataset(Dataset):
     def create_one_example(self, text_encoding: List[int], is_query=False):
         item = self.tok.prepare_for_model(
             text_encoding,
-            truncation='only_first',
+            truncation=True, # 'only_first'
             max_length=self.data_args.q_max_len if is_query else self.data_args.p_max_len,
             padding=False,
             return_attention_mask=False,
@@ -98,7 +98,7 @@ class EncodeDataset(Dataset):
         encoded_text = self.tok.prepare_for_model(
             text,
             max_length=self.max_len,
-            truncation='only_first',
+            truncation=True, # 'only_first'
             padding=False,
             return_token_type_ids=False,
         )

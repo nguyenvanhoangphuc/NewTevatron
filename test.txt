@@ -1,0 +1,10 @@
+self.dataset Dataset({
+    features: ['query_id', 'query', 'positive_passages', 'negative_passages'],
+    num_rows: 400782
+})
+
+self.dataset after process Dataset({
+    features: ['query', 'positives', 'negatives'],
+    num_rows: 400782
+})
+

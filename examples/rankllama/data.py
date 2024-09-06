@@ -89,7 +89,7 @@ class RerankerTrainDataset(Dataset):
         item = self.tok.prepare_for_model(
             [self.tok.bos_token_id] + query_encoding,
             [self.tok.bos_token_id] + text_encoding, # + [self.tok.eos_token_id],
-            truncation='only_first',
+            truncation=True,  # 'only_first'
             max_length=self.data_args.q_max_len + self.data_args.p_max_len,
             padding=False,
             return_attention_mask=False,

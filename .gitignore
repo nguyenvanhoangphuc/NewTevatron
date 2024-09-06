@@ -2,3 +2,6 @@
 __pycache__/
 *.egg-info/
 model_repllama/
+beir_embedding_scifact_new/
+ms_marco_bm25_1208/
+train_retrieval_ms_marco_dataset/

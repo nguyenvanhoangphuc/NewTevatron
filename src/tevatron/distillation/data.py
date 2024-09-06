@@ -113,7 +113,7 @@ class DistilTrainDataset(Dataset):
     def create_student_example(self, text_encoding: List[int], is_query=False):
         item = self.student_tokenizer.prepare_for_model(
             text_encoding,
-            truncation='only_first',
+            truncation=True, # 'only_first'
             max_length=self.data_args.q_max_len if is_query else self.data_args.p_max_len,
             padding=False,
             return_attention_mask=False,
@@ -125,7 +125,7 @@ class DistilTrainDataset(Dataset):
         item = self.teacher_tokenizer.prepare_for_model(
             query_encoding,
             text_encoding,
-            truncation='only_first',
+            truncation=True, # 'only_first'
             max_length=self.data_args.q_max_len + self.data_args.p_max_len,
             padding=False,
             return_attention_mask=False,

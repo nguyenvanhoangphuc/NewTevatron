@@ -1,0 +1,136 @@
+================================================================================
+1.x
+********************************************************************************
+hf_model PeftModelForFeatureExtraction(
+  (base_model): LoraModel(
+    (model): LlamaModel(
+      (embed_tokens): Embedding(32000, 4096)
+      (layers): ModuleList(
+        (0-31): 32 x LlamaDecoderLayer(
+          (self_attn): LlamaSdpaAttention(
+            (q_proj): lora.Linear4bit(
+              (base_layer): Linear4bit(in_features=4096, out_features=4096, bias=False)
+              (lora_dropout): ModuleDict(
+                (default): Dropout(p=0.1, inplace=False)
+              )
+              (lora_A): ModuleDict(
+                (default): Linear(in_features=4096, out_features=8, bias=False)
+              )
+              (lora_B): ModuleDict(
+                (default): Linear(in_features=8, out_features=4096, bias=False)
+              )
+              (lora_embedding_A): ParameterDict()
+              (lora_embedding_B): ParameterDict()
+              (lora_magnitude_vector): ModuleDict()
+            )
+            (k_proj): Linear4bit(in_features=4096, out_features=4096, bias=False)
+            (v_proj): lora.Linear4bit(
+              (base_layer): Linear4bit(in_features=4096, out_features=4096, bias=False)
+              (lora_dropout): ModuleDict(
+                (default): Dropout(p=0.1, inplace=False)
+              )
+              (lora_A): ModuleDict(
+                (default): Linear(in_features=4096, out_features=8, bias=False)
+              )
+              (lora_B): ModuleDict(
+                (default): Linear(in_features=8, out_features=4096, bias=False)
+              )
+              (lora_embedding_A): ParameterDict()
+              (lora_embedding_B): ParameterDict()
+              (lora_magnitude_vector): ModuleDict()
+            )
+            (o_proj): lora.Linear4bit(
+              (base_layer): Linear4bit(in_features=4096, out_features=4096, bias=False)
+              (lora_dropout): ModuleDict(
+                (default): Dropout(p=0.1, inplace=False)
+              )
+              (lora_A): ModuleDict(
+                (default): Linear(in_features=4096, out_features=8, bias=False)
+              )
+              (lora_B): ModuleDict(
+                (default): Linear(in_features=8, out_features=4096, bias=False)
+              )
+              (lora_embedding_A): ParameterDict()
+              (lora_embedding_B): ParameterDict()
+              (lora_magnitude_vector): ModuleDict()
+            )
+            (rotary_emb): LlamaRotaryEmbedding()
+          )
+          (mlp): LlamaMLP(
+            (gate_proj): lora.Linear4bit(
+              (base_layer): Linear4bit(in_features=4096, out_features=11008, bias=False)
+              (lora_dropout): ModuleDict(
+                (default): Dropout(p=0.1, inplace=False)
+              )
+              (lora_A): ModuleDict(
+                (default): Linear(in_features=4096, out_features=8, bias=False)
+              )
+              (lora_B): ModuleDict(
+                (default): Linear(in_features=8, out_features=11008, bias=False)
+              )
+              (lora_embedding_A): ParameterDict()
+              (lora_embedding_B): ParameterDict()
+              (lora_magnitude_vector): ModuleDict()
+            )
+            (up_proj): lora.Linear4bit(
+              (base_layer): Linear4bit(in_features=4096, out_features=11008, bias=False)
+              (lora_dropout): ModuleDict(
+                (default): Dropout(p=0.1, inplace=False)
+              )
+              (lora_A): ModuleDict(
+                (default): Linear(in_features=4096, out_features=8, bias=False)
+              )
+              (lora_B): ModuleDict(
+                (default): Linear(in_features=8, out_features=11008, bias=False)
+              )
+              (lora_embedding_A): ParameterDict()
+              (lora_embedding_B): ParameterDict()
+              (lora_magnitude_vector): ModuleDict()
+            )
+            (down_proj): lora.Linear4bit(
+              (base_layer): Linear4bit(in_features=11008, out_features=4096, bias=False)
+              (lora_dropout): ModuleDict(
+                (default): Dropout(p=0.1, inplace=False)
+              )
+              (lora_A): ModuleDict(
+                (default): Linear(in_features=11008, out_features=8, bias=False)
+              )
+              (lora_B): ModuleDict(
+                (default): Linear(in_features=8, out_features=4096, bias=False)
+              )
+              (lora_embedding_A): ParameterDict()
+              (lora_embedding_B): ParameterDict()
+              (lora_magnitude_vector): ModuleDict()
+            )
+            (act_fn): SiLU()
+          )
+          (input_layernorm): LlamaRMSNorm((4096,), eps=1e-05)
+          (post_attention_layernorm): LlamaRMSNorm((4096,), eps=1e-05)
+        )
+      )
+      (norm): LlamaRMSNorm((4096,), eps=1e-05)
+      (rotary_emb): LlamaRotaryEmbedding()
+    )
+  )
+)
+================================================================================
+self.dataset Dataset({
+    features: ['query_id', 'query', 'positive_passages', 'negative_passages'],
+    num_rows: 400782
+})
+Query ID: 1000684
+Query: where is your perineum
+Positive Passages: [{'docid': '6133670', 'title': 'perineum', 'text': 'That part of the floor of the PELVIS that lies between the tops of the thighs. In the male, the perineum lies between the anus and the scrotum. In the female, it includes the external genitalia. The area between the opening of the vagina and the anus in a woman, or the area between the scrotum and the anus in a man.'}]
+Negative Passages: [{'docid': '6475882', 'title': 'After the birth', 'text': 'To help the perineum to heal. 1  Keep the area cold by using a wrapped ice pack for the first 24 to 72 hours. 2  This decreases the pain and swelling which is important for healing and comfort. 3  Have the wrapped ice pack on for 10 to 20 minutes at the most each time. 4  Change sanitary pads often to keep the perineum dry.'}, {'docid': '8032962', 'title': 'Basal-cell carcinoma', 'text': 'Aberrant basal cell carcinoma is characterized by the formation of basal-cell carcinoma in the absence of any apparent carcinogenic factor, occurring in odd sites such as the scrotum, vulva, perineum, nipple, and axilla.'}, {'docid': '5778063', 'title': 'What Causes a Swollen Perineum Female', 'text': 'But then, it is becoming really complicated if the impulse or the stimulation of the sexual activity to be happened is not really proper. Men and women, both often have serious problem that make them lost their passion in doing the sexual activity. A swollen perineum might be the real problem for them.This kind of thing might make their sexual activity really not interesting at all. Because of that, you have to be aware of what causes a swollen perineum female, so that you will be able to have a wonderful sex so often in your life.f the female swollen perineum female ignore the useful usage of the lubrication, and then she and her partner do a very intense sexual activity with a very strong action, like strong penetration from the male, surely her perineum will easily get swollen. This some what causes a swollen perineum female.'}, {'docid': '4468567', 'title': 'Genital Warts', 'text': 'Genital warts can also occur at multiple sites in the anogenital epithelium or within the anogenital tract (e.g., cervix, vagina, urethra, perineum, perianal skin, and scrotum). â\x80¢ Condylomata lata are a manifestation of secondary syphilis.'}, {'docid': '3985976', 'title': '-', 'text': 'Perineoplasty. The area between the vaginal opening (introitus) and the anus, known as the perineum or by the slang term â\x80\x9ctaint,â\x80\x9d can tear during childbirth or become scarred from a surgical episiotomy or become stretched out as a result of obesity.bout Perineoplasty. During childbirth, itâ\x80\x99s not uncommon for physicians to perform an episiotomy, an incision made through the perineum that temporarily widens the introitus to allow an easier birthing process and preemptively prevent the possibility of a spontaneous tear.'}, {'docid': '8420371', 'title': 'Perineum pain', 'text': 'Perineum pain. Perineum pain: Introduction. Perineum pain: pain in the perineal region due to involvement of the skin and muscle. See detailed information below for a list of 16 causes of Perineum pain, Symptom Checker, including diseases and drug side effect causes. Â» Review Causes of Perineum pain: Causes | Symptom Checker Â».'}, {'docid': '6292462', 'title': '-', 'text': 'Figure: MU 3 The Spongiose Urethra This is the longest part of the male urethra. Measuring about 15cm with a diameter of 6mm, it extends from the perineal membrane to the external urethral meatus of the glans penis. It is located in the perineum within the substance of the corpus spongiosus of the penis.t is the widest and most distensible part of the male urethra. 3. Membranous Urethra: This part measures about 1cm in length, with a 6mm wide stellate lumen and traverses the urogenital diaphragm â\x80\x93 A muscular sheet. 4. Spongiose Urethra: This is about 15cm long with a 6mm wide slit-like lumen.'}, {'docid': '2455289', 'title': '-', 'text': 'Perineum bruise: Introduction. Perineum bruise: Usually occurs due to trauma to the groin area. See detailed information below for a list of 2 causes of Perineum bruise, including diseases and drug side effect causes. Causes of Perineum bruise: The following medical conditions are some of the possible causes of Perineum bruise.'}, {'docid': '465746', 'title': 'Pain & IC', 'text': 'Interstitial cystitis (IC) can be severely painful and incapacitating and may require aggressive pain management medicines such as opiate therapy when more conservative approaches fail. Place a cold pack, heating pad or hot water bottle directly on the perineum.'}, {'docid': '2970386', 'title': '-', 'text': 'The accessory glands of the male reproductive system include the seminal vesicles, prostate, and the glans. penis. II. Perineum and Scrotum. â\x98\x9e Concept: The perineum is the specific portion of the pelvic region that contains the external genitalia and the anal. opening.'}, {'docid': '639237', 'title': '-', 'text': 'Definition. An episiotomy is a surgical incision made in the area between the vagina and anus (perineum). This is done during the last stages of labor and delivery to expand the opening of the vagina to prevent tearing during the delivery of the baby.'}, {'docid': '4468123', 'title': 'Prostate biopsy', 'text': 'Prostate biopsy samples can be collected in different ways. Passing the needle through the wall of the rectum (transrectal biopsy). This is the most common way of performing a prostate biopsy. Inserting the needle through the area of skin between the anus and scrotum (transperineal biopsy). A small cut is made in the area of skin (perineum) between the anus and the scrotum.'}, {'docid': '216323', 'title': 'Disorders of Vulva', 'text': 'The inner lips are called the labia minora. The clitoris is at the top of the inner lips For most women, the clitoris is a center of sexual pleasure. It is partly covered by a fold of tissue called the hood. The perineum is the area between the anus and vagina. The vestibule is found within the inner lips.'}, {'docid': '1672627', 'title': '-', 'text': 'The procedure is the same as it is for routine perineal care with one difference: After you have washed, rinsed, and dried the perineal area, apply a cream or ointment on the perineum and surrounding skin as prescribed to act as a barrier that will help protect the patient s skin.ale perineal cleaning. Wash the patient s upper thighs and inguinal area. Clean the tip of the penis at the urethral meatus in a circular motion from the center outward. Wash the shaft of the penis from the tip to the base in a downward motion. Wash the scrotom including the underlying skin folds.'}, {'docid': '2455291', 'title': 'Perineum Contusion', 'text': 'Perineum Contusion. A direct blow to the floor of the pelvis and associated structures including the. genitals, causing bruising of skin and underlying tissues. Contusions cause bleeding from ruptured small capillaries that allow blood to infiltrate muscles, tendons, nerves or other soft tissue.'}, {'docid': '2781223', 'title': 'Virilization', 'text': 'In the prenatal period, virilization refers to closure of the perineum, thinning and wrinkling (rugation) of the scrotum, growth of the phallus, and closure of the urethral groove to the tip of the penis. In this context, masculinization is synonymous with virilization.'}, {'docid': '3874666', 'title': '-', 'text': 'Sexual activity and oral contraception may also be contributing factors and infections may extend to include the perineum, the vulva and the entire inguinal area. Chronic refractory vaginal candidiasis, associated with oral candidiasis, may also be a presentation of HIV infection or AIDS.. Chronic mucocutaneous candidiasis: Chronic mucocutaneous candidiasis is a form of persistent candidiasis, usually caused by C. albicans, of the skin, nails and mucous membranes that occurs in patients with various metabolic disturbances to cell-mediated immunity.'}, {'docid': '4901662', 'title': 'Talk', 'text': "Internal stitches sticking out/not dissolving - TMI. I had a third degree tear 6 weeks ago and thankfully it's healed up fine. However, a couple of days ago I discovered there was what felt like a sharp point sticking out of the skin in my perineum. As it happened, I had a six week follow-up appointment at the hospital in the afternoon so I said I thought I could feel a stitch."}, {'docid': '216315', 'title': 'Vulva', 'text': 'The skin of the vulva is more delicate than other areas of skin. Pubic hair is much coarser than other body hair. It appears at puberty and is considered a secondary sex characteristic. The mons pubis and the labia majora become covered by pubic hair and it can also grow on the inner thighs and perineum.'}, {'docid': '3258709', 'title': 'Severe Perineal Tear During First Childbirth Increases Risk Of Recurrent Vaginal Tear In Future Deliveries', 'text': 'Tearing during delivery generally occurs in the perineum â\x80\x94 the area between the vagina and anus. The tear ranges from being superficial, when the top layer of the perineum gets grazed, to second-degree tear, which extends from the vaginal skin to the underlying tissue.'}, {'docid': '7681692', 'title': '-', 'text': 'SECURA Personal Cleanser Antimicrobial Skin Cleanser. Features & Benefits. No-rinse, one-step cleansing for perineum and body saves time; pH balanced; Helps control odor; Pediatrician tested; Indications. Antimicrobial skin cleanser, for perineum and body, aids in removal of urine and feces or other foreign material. Warnings. For external use only.'}, {'docid': '2163086', 'title': 'Definitions &Translations', 'text': 'Freebase(0.00 / 0 votes)Rate this definition: In some male mammals, the scrotum is a dual-chambered protuberance of skin and muscle, containing the testicles and divided by a septum. It is an extension of the perineum, and is located between the penis and anus. In humans and some other mammals, the scrotum becomes covered with pubic hairs at puberty.'}, {'docid': '2455294', 'title': '-', 'text': 'Signs & Symptoms. 1  Swelling in the perineal area-either superficial or deep. 2  Pain in the perineum. 3  Feeling of firmness when pressure is exerted. 4  Tenderness. Discoloration under the skin beginning with redness and progressing to the characteristic black and blue discoloration.'}, {'docid': '3319280', 'title': 'Tickling', 'text': 'While the palm of the hand is far more sensitive to touch, some people find that the underarms are the most ticklish. Other commonly ticklish areas include the feet, sides of the torso, neck, knee, midriff, perineum, navel, and the ribs. Some evidence suggests that laughing associated with tickling is a nervous reaction that can be triggered; indeed, very ticklish people often start laughing before actually being tickled.'}, {'docid': '1548886', 'title': 'Kevin Conrad', 'text': 'The operator is accountable for all swabs, sutures and needles before, during and after the procedure. Pain Relief during Suturing If the woman has an epidural, ensure that it provides adequate pain relief. If it does not, then local anaesthesia may be used in addition. The perineum is infiltrated using lidocaine 1%.f. the 152 midwives who responded to the questionnaire and who regularly undertook perineal repair, only. 47% stated that they used the new method exclusively, 28% were using a combination of the old and new. technique and 25% were exclusively using the old technique.'}, {'docid': '5952791', 'title': 'Perineum', 'text': 'The perineum is an erogenous zone for both males and females. Perineal tears and episiotomy often occur in childbirth with first-time deliveries, but the risk of these injuries can be reduced by preparing the perineum, often through massage.'}, {'docid': '7572611', 'title': 'User Contributed Dictionary', 'text': 'The area between the labia minora is called the vulval vestibule, and it contains the vaginal opening and the urinary meatus. The urinary meatus is located below the clitoris and just in front of the vagina. The opening of the vagina is located at the bottom of the vulval vestibule, toward the perineum.'}, {'docid': '1652808', 'title': 'The Anatomy of the Perineum', 'text': 'The perineum is the region between the thighs inferior to the pelvic diaphragm. The boundaries of this region are the same as that for the pelvic outlet, namely the pubic symphysis, ischiopubic rami, sacrotuberous ligaments, and coccyx. The perineum has a roof formed by the pelvic diaphragm and a floor of fascia and skin.'}, {'docid': '3180745', 'title': '-', 'text': 'Bidets are primarily used to wash and clean the genitalia, perineum, inner buttocks, and anus. Traditional designs may also be used to clean any other part of the human body, such as the feet.Despite appearing similar to a toilet, a traditional bidet may be more accurately compared to a washbasin or bathtub.n northern Europe (with the exception of Finland), bidets are rare. They are also common in the Middle East, in countries such as Armenia, Iran, Iraq, Kuwait, Saudi Arabia, Qatar, the UAE, Turkey, Lebanon, Palestine, Syria, and Jordan.'}, {'docid': '4979118', 'title': 'Bicycle Seat Neuropathy', 'text': 'The main treatment for bicycle seat neuropathy is the adjustment of the bike seat and proper bike position, which may include tilting the nose of the seat down or lowering the seat height to relieve pressure from the perineum.'}]
+--------------------------------------------------
+self.dataset after process Dataset({
+    features: ['query', 'positives', 'negatives'],
+    num_rows: 400782
+})
+[2024-09-05 07:47:08,090] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
+[93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
+[93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
+[93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
+[93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
+[93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+

@@ -61,8 +61,9 @@ def main():
         model_name_or_path=model_args.model_name_or_path,
         cache_dir=model_args.cache_dir,
     )
-
+    
     text_max_length = data_args.q_max_len if data_args.encode_is_qry else data_args.p_max_len
+    print("text_max_length", text_max_length)
     if data_args.encode_is_qry:
         encode_dataset = HFQueryDataset(tokenizer=tokenizer, data_args=data_args,
                                         cache_dir=data_args.data_cache_dir or model_args.cache_dir)
@@ -97,14 +98,20 @@ def main():
         lookup_indices.extend(batch_ids)
         # print('===='*20)
         # print(2)
-        with torch.cuda.amp.autocast() if training_args.fp16 else nullcontext():
+        with  torch.cuda.amp.autocast() if training_args.fp16 else nullcontext():
             with torch.no_grad():
                 for k, v in batch.items():
+                    print("===="*20)
+                    print(k, "=>", v)
                     batch[k] = v.to(training_args.device)
+                    print("===="*20)
+                    print(k, "=to device=>", v)
                 # print('===='*20)
                 # print(3)
                 if data_args.encode_is_qry:
                     model_output = model(query=batch)
+                    print("===="*20)
+                    print("model_output", model_output)
                     encoded.append(model_output.q_reps.cpu().detach().numpy())
                 else:
                     model_output = model(passage=batch)

@@ -30,7 +30,7 @@ class RerankerTrainDataset(Dataset):
         item = self.tok.prepare_for_model(
             query_encoding,
             text_encoding,
-            truncation='only_first',
+            truncation=True, # 'only_first'
             max_length=self.data_args.q_max_len + self.data_args.p_max_len,
             padding=False,
             return_attention_mask=False,
@@ -85,7 +85,7 @@ class RerankerInferenceDataset(Dataset):
             query,
             text,
             max_length=self.max_q_len + self.max_p_len,
-            truncation='only_first',
+            truncation=True, # 'only_first'
             padding=False,
             return_token_type_ids=True,
         )
