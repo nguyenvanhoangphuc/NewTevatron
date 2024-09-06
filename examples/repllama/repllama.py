@@ -45,7 +45,7 @@ class RepLLaMA(EncoderModel):
         print("===="*20)
         print("qry", qry)
         qry_out = self.lm_q(**qry, output_hidden_states=True)
-        # print("qry_out", qry_out)
+        print("qry_out", qry_out)
         # print("qry_out.last_hidden_state.shape", qry_out.last_hidden_state.shape)
         # print("len(qry_out.hidden_states)", len(qry_out.hidden_states))
         # print("qry_out.hidden_states.shape", qry_out.hidden_states[-1].shape)
@@ -91,6 +91,7 @@ class RepLLaMA(EncoderModel):
     ):
         print("====" * 20)
         print("1.x")
+        print(cls)
         # Configure quantization
         quantization_config = BitsAndBytesConfig(load_in_4bit=True)
         
@@ -122,6 +123,7 @@ class RepLLaMA(EncoderModel):
         )
 
         hf_model = get_peft_model(base_model, peft_config)
+        print("===="*20)
         print("hf_model", hf_model)
 
         model = cls(
@@ -250,6 +252,9 @@ class RepLLaMA(EncoderModel):
         )
 
         hf_model = get_peft_model(base_model, peft_config)
+
+        print("===="*20)
+        print("hf_model", hf_model)
 
         # config = LoraConfig.from_pretrained(model_name_or_path)
         # base_model = LlamaModel.from_pretrained(config.base_model_name_or_path)

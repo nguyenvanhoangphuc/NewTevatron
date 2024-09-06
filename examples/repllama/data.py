@@ -97,9 +97,16 @@ class HFQueryDataset:
         data_files = data_args.encode_in_path
         if data_files:
             data_files = {data_args.dataset_split: data_files}
-        self.dataset = load_dataset(data_args.dataset_name,
-                                    data_args.dataset_language,
-                                    data_files=data_files, cache_dir=cache_dir, use_auth_token=True, trust_remote_code=True)[data_args.dataset_split]
+        # self.dataset = load_dataset(data_args.dataset_name,
+        #                             data_args.dataset_language,
+        #                             data_files=data_files, cache_dir=cache_dir, use_auth_token=True, trust_remote_code=True)[data_args.dataset_split]
+        self.dataset = datasets.load_from_disk(data_args.dataset_name)
+        print("===="*20)
+        print("self.dataset", self.dataset)
+        i = 1
+        print(f"Query ID: {self.dataset[i]['query_id']}")
+        print(f"Query: {self.dataset[i]['query']}")
+        print("-" * 50)
         self.preprocessor = QueryPreProcessor
         self.tokenizer = tokenizer
         self.q_max_len = data_args.q_max_len
@@ -138,9 +145,17 @@ class HFCorpusDataset:
         data_files = data_args.encode_in_path
         if data_files:
             data_files = {data_args.dataset_split: data_files}
-        self.dataset = load_dataset(data_args.dataset_name,
-                                    data_args.dataset_language,
-                                    data_files=data_files, cache_dir=cache_dir, use_auth_token=True, trust_remote_code=True)[data_args.dataset_split]
+        # self.dataset = load_dataset(data_args.dataset_name,
+        #                             data_args.dataset_language,
+        #                             data_files=data_files, cache_dir=cache_dir, use_auth_token=True, trust_remote_code=True)[data_args.dataset_split]
+        self.dataset = datasets.load_from_disk(data_args.dataset_name)
+        print("===="*20)
+        print("self.dataset", self.dataset)
+        i = 1
+        print(f"docid: {self.dataset[i]['docid']}")
+        print(f"title: {self.dataset[i]['title']}")
+        print(f"text: {self.dataset[i]['text']}")
+        print("-" * 50)
         script_prefix = data_args.dataset_name
         if script_prefix.endswith('-corpus'):
             script_prefix = script_prefix[:-7]
