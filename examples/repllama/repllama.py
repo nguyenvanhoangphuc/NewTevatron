@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from transformers import LlamaModel, PreTrainedModel
+from transformers import LlamaModel, PreTrainedModel, AutoConfig
 import logging
 from peft import LoraConfig, get_peft_model, PeftModel, TaskType, PeftConfig
 from tevatron.modeling.encoder import EncoderModel
@@ -42,20 +42,9 @@ class RepLLaMA(EncoderModel):
     def encode_query(self, qry):
         if qry is None:
             return None
-        # print("===="*20)
-        # print("qry", qry)
+
         qry_out = self.lm_q(**qry, output_hidden_states=True)
-        # print("qry_out", qry_out)
-        # print("qry_out.last_hidden_state.shape", qry_out.last_hidden_state.shape)
-        # print("len(qry_out.hidden_states)", len(qry_out.hidden_states))
-        # print("qry_out.hidden_states.shape", qry_out.hidden_states[-1].shape)
-        # print("qry_out.last_hidden_state", qry_out.last_hidden_state)
-        # print("qry_out.hidden_states", qry_out.hidden_states[-1])
         q_hidden = qry_out.hidden_states[-1]
-        # print("q_hidden", q_hidden)
-        # if math.isnan(q_hidden[0]): 
-        #     # print("q_hidden[0]", q_hidden[0])
-        #     print("q_hidden[0].shape", q_hidden[0].shape)
         
         attention_mask = qry['attention_mask']
         # q_reps is the last token representation that is not padding
@@ -89,19 +78,12 @@ class RepLLaMA(EncoderModel):
             train_args,
             **hf_kwargs,
     ):
-        # print("====" * 20)
-        # print("1.x")
-        # print(cls)
-        # Configure quantization
-        quantization_config = BitsAndBytesConfig(load_in_4bit=True)
-        
-        # Load base model with quantization in 8-bit
-        base_model = LlamaModel.from_pretrained(
-            model_args.model_name_or_path,
-            quantization_config = quantization_config
-        )
-        # print("****" * 20)
-
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype="float16")
+        base_model = LlamaModel.from_pretrained(model_args.model_name_or_path, 
+                                                quantization_config = quantization_config,  
+                                                torch_dtype=torch.float16, 
+                                                device_map="auto",
+                                                **hf_kwargs)
         if train_args.gradient_checkpointing:
             base_model.enable_input_require_grads()
         
@@ -109,31 +91,16 @@ class RepLLaMA(EncoderModel):
             base_model.config.pad_token_id = 0
 
         peft_config = LoraConfig(
-            base_model_name_or_path= model_args.model_name_or_path,
+            base_model_name_or_path=model_args.model_name_or_path,
             task_type=TaskType.FEATURE_EXTRACTION,
-            r=8,
-            lora_alpha=16,
+            r=32,
+            lora_alpha=64,
             lora_dropout=0.1,
             target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
             inference_mode=False
         )
+
         hf_model = get_peft_model(base_model, peft_config)
-        
-        # config = LoraConfig.from_pretrained(model_args.model_name_or_path)
-
-        # hf_model = PeftModel.from_pretrained(base_model, model_args.model_name_or_path, config=peft_config, is_trainable=True)
-        # print("this")
-
-        # # hf_model = hf_model.merge_and_unload()
-        # print("===="*20)
-        # print("hf_model", hf_model)
-
-        # # In tất cả các tham số của mô hình
-        # for name, param in hf_model.named_parameters():
-        #     print(f"Parameter Name: {name}")
-        #     print(f" - Shape: {param.shape}")
-        #     print(f" - Requires Grad: {param.requires_grad}")
-        #     print(f" - Values: {param.data}\n")
 
         model = cls(
             lm_q=hf_model,
@@ -149,47 +116,14 @@ class RepLLaMA(EncoderModel):
             cls,
             model_name_or_path,
             **hf_kwargs,
-    ):
-        # Configure quantization
-        quantization_config = BitsAndBytesConfig(load_in_4bit=True)
-        
-        # Load base model with quantization in 8-bit
-        base_model = LlamaModel.from_pretrained(
-            model_name_or_path,
-            quantization_config = quantization_config
-        )
-        # print("****" * 20)
-        
+    ):  
+        config = LoraConfig.from_pretrained(model_name_or_path)
+        quantization_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype="float16")
+        base_model = LlamaModel.from_pretrained(config.base_model_name_or_path, quantization_config = quantization_config)
         if base_model.config.pad_token_id is None:
             base_model.config.pad_token_id = 0
-
-        # peft_config = LoraConfig(
-        #     base_model_name_or_path=os.path.join(os.getcwd(), "model_repllama/checkpoint-14600"), #model_args.model_name_or_path
-        #     task_type=TaskType.FEATURE_EXTRACTION,
-        #     r=8,
-        #     lora_alpha=16,
-        #     lora_dropout=0.1,
-        #     target_modules=["q_proj", "v_proj", "o_proj", "down_proj", "up_proj", "gate_proj"],
-        #     inference_mode=False
-        # )
-        
-        config = LoraConfig.from_pretrained(model_name_or_path)
-
-
         hf_model = PeftModel.from_pretrained(base_model, model_name_or_path, config=config, is_trainable=True)
-        # print("this")
-
-        # hf_model = hf_model.merge_and_unload()
-
-        # print("===="*20)
-        # print("hf_model", hf_model)
-
-        # # In tất cả các tham số của mô hình
-        # for name, param in hf_model.named_parameters():
-        #     print(f"Parameter Name: {name}")
-        #     print(f" - Shape: {param.shape}")
-        #     print(f" - Requires Grad: {param.requires_grad}")
-        #     print(f" - Values: {param.data}\n")
+        hf_model = hf_model.merge_and_unload()
         model = cls(
             lm_q=hf_model,
             lm_p=hf_model,
@@ -199,11 +133,4 @@ class RepLLaMA(EncoderModel):
         return model
 
     def save(self, output_dir: str):
-        # print("self.lm_q.save_pretrained(output_dir)")
-        # # In tất cả các tham số của mô hình
-        # for name, param in self.lm_q.named_parameters():
-        #     print(f"Parameter Name: {name}")
-        #     print(f" - Shape: {param.shape}")
-        #     print(f" - Requires Grad: {param.requires_grad}")
-        #     print(f" - Values: {param.data}\n")
         self.lm_q.save_pretrained(output_dir)

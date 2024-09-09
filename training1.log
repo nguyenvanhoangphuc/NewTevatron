@@ -1,14 +1,53 @@
 ning_args = parser.parse_args_into_dataclasses()
+call HFTrainDataset
 self.dataset after process Dataset({
     features: ['query', 'positives', 'negatives'],
     num_rows: 1861
 })
-[2024-09-09 04:17:12,031] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2024-09-09 10:26:51,338] [INFO] [real_accelerator.py:203:get_accelerator] Setting ds_accelerator to cuda (auto detect)
 [93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
 [93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
 [93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
 [93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
 [93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
 [93m [WARNING] [0m On Ampere and higher architectures please use CUDA 11+
-{'loss': 2.3986, 'grad_norm': 17.261011123657227, 'learning_rate': 1e-05, 'epoch': 0.01}
-{'loss': 2.6394, 'grad_norm': 13.141944885253906, 'learning_rate': 2e-05, 'epoch': 0.02}
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator
+{'loss': 2.4693, 'grad_norm': 46.04656982421875, 'learning_rate': 1e-05, 'epoch': 0.01}
+call train dataset
+call train dataset
+call TrainCollator
+call train dataset
+call train dataset
+call TrainCollator

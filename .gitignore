@@ -8,3 +8,4 @@ train_retrieval_ms_marco_dataset/
 beir_embedding_scifact/
 test_retrieval_ms_marco/
 validation_retrieval_ms_marco_dataset/
+test_retrieval_ja/

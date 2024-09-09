@@ -4,8 +4,10 @@
 import datasets
 
 # init
-test_ds_path = "./test_retrieval_ms_marco"
-rank_txt_path = "./beir_embedding_scifact_new/rank.scifact.txt"
+# test_ds_path = "./test_retrieval_ms_marco"
+# rank_txt_path = "./beir_embedding_scifact/rank.scifact.txt"
+test_ds_path = "./test_retrieval_ja"
+rank_txt_path = "./beir_embedding_scifact/rank.scifact_done.txt"
 ks = [1, 2, 3, 5, 7, 10]    # Danh sách các k cần tính precision và recall
 
 # Load lại test dataset
@@ -60,7 +62,9 @@ for k in ks:
     precisions[k] = 0
     recalls[k] = 0
 
-for query_id in query_relate:
+print(len(top10_predict))
+
+for query_id in top10_predict:
     positive_passages = query_relate[query_id]
     predict_passages = top10_predict[query_id]
     for k in ks: 
@@ -72,15 +76,15 @@ for query_id in query_relate:
         recalls[k] += count_retrieval/len(positive_passages)
 
 for k in ks:
-    precisions[k] /= len(query_relate)
-    recalls[k] /= len(query_relate)
+    precisions[k] /= len(top10_predict)
+    recalls[k] /= len(top10_predict)
 
 print("Precisions@k: ", precisions)
 print("Recalls@k: ", recalls)
 
 # Tính MAP
 APs = []
-for query_id in query_relate:
+for query_id in top10_predict:
     positive_passages = query_relate[query_id]
     predict_passages = top10_predict[query_id]
     count_retrieval = 0
@@ -99,7 +103,7 @@ my_recalls = {}
 for k in ks: 
     my_recalls[k] = 0
 
-for query_id in query_relate:
+for query_id in top10_predict:
     positive_passages = query_relate[query_id]
     predict_passages = top10_predict[query_id]
     for k in ks: 
@@ -110,6 +114,6 @@ for query_id in query_relate:
         my_recalls[k] += count_retrieval/min(k, len(positive_passages))
 
 for k in ks:
-    my_recalls[k] /= len(query_relate)
+    my_recalls[k] /= len(top10_predict)
 
 print("My_recalls@k: ", my_recalls)

@@ -53,6 +53,7 @@ class HFTrainDataset:
         self.separator = getattr(self.tokenizer, data_args.passage_field_separator, data_args.passage_field_separator)
 
     def process(self, shard_num=1, shard_idx=0):
+        print("call HFTrainDataset")
         self.dataset = self.dataset.shard(shard_num, shard_idx)
         if self.preprocessor is not None:
             self.dataset = self.dataset.map(
@@ -74,6 +75,7 @@ class TrainPreProcessor:
 
     def __call__(self, example):
         # print("example", example)
+        print("call TrainPreProcessor")
         query = self.tokenizer.encode('query: ' + example['query'],
                                       add_special_tokens=False,
                                       max_length=self.query_max_length-3,
@@ -227,6 +229,7 @@ class TrainDataset(Dataset):
         return self.total_len
 
     def __getitem__(self, item) -> Tuple[BatchEncoding, List[BatchEncoding]]:
+        print("call train dataset")
         group = self.train_data[item]
         epoch = int(self.trainer.state.epoch)
 
@@ -257,13 +260,20 @@ class TrainDataset(Dataset):
             # print("ta_args.negative_passage_no_shuffle")
             negs = group_negatives[:negative_size]
         else:
-            # print("===="*20)
-            # print("* negative_size len(group_n")
+            print("===="*20)
+            print("* negative_size len(group_n")
             _offset = epoch * negative_size % len(group_negatives)
+            print("_offset", _offset)
             negs = [x for x in group_negatives]
+            print("negs", negs)
+            print("len(negs)", len(negs))
             random.Random(_hashed_seed).shuffle(negs)
             negs = negs * 2
+            print("negs", negs)
+            print("len(negs)", len(negs))
             negs = negs[_offset: _offset + negative_size]
+            print("negs", negs)
+            print("len(negs)", len(negs))
 
         for neg_psg in negs:
             encoded_passages.append(self.create_one_example(neg_psg))
@@ -305,6 +315,7 @@ class TrainCollator(DataCollatorWithPadding):
     max_p_len: int = 128
 
     def __call__(self, features):
+        print("call TrainCollator")
         qq = [f[0] for f in features]
         dd = [f[1] for f in features]
 
