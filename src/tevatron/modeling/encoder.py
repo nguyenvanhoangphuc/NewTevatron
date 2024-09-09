@@ -76,8 +76,8 @@ class EncoderModel(nn.Module):
 
     def forward(self, query: Dict[str, Tensor] = None, passage: Dict[str, Tensor] = None):
         q_reps = self.encode_query(query)
-        print("===="*20)
-        print("q_reps", q_reps)
+        # print("===="*20)
+        # print("q_reps", q_reps)
         p_reps = self.encode_passage(passage)
 
         # for inference

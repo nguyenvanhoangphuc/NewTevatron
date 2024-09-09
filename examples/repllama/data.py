@@ -17,23 +17,27 @@ logger = logging.getLogger(__name__)
 
 
 class HFTrainDataset:
-    def __init__(self, tokenizer: PreTrainedTokenizer, data_args: DataArguments, cache_dir: str):
+    def __init__(self, tokenizer: PreTrainedTokenizer, data_args: DataArguments, cache_dir: str, is_eval: False):
         data_files = data_args.train_path
         if data_files:
             data_files = {data_args.dataset_split: data_files}
         # self.dataset = load_dataset(data_args.dataset_name,
         #                             data_args.dataset_language,
         #                             data_files=data_files, cache_dir=cache_dir, use_auth_token=True, trust_remote_code=True)[data_args.dataset_split]
-        self.dataset = datasets.load_from_disk(data_args.dataset_name)
+        if not is_eval:
+            self.dataset = datasets.load_from_disk(data_args.dataset_name)
+        else: 
+            self.dataset = datasets.load_from_disk(data_args.eval_dataset_name)
+
         
-        print("===="*20)
-        print("self.dataset", self.dataset)
-        i = 1
-        print(f"Query ID: {self.dataset[i]['query_id']}")
-        print(f"Query: {self.dataset[i]['query']}")
-        print(f"Positive Passages: {self.dataset[i]['positive_passages']}")
-        print(f"Negative Passages: {self.dataset[i]['negative_passages']}")
-        print("-" * 50)
+        # print("===="*20)
+        # print("self.dataset", self.dataset)
+        # i = 1
+        # print(f"Query ID: {self.dataset[i]['query_id']}")
+        # print(f"Query: {self.dataset[i]['query']}")
+        # print(f"Positive Passages: {self.dataset[i]['positive_passages']}")
+        # print(f"Negative Passages: {self.dataset[i]['negative_passages']}")
+        # print("-" * 50)
 
         # # check có bao nhieu câu positive
         # for i in range(len(self.dataset)): 
@@ -101,12 +105,12 @@ class HFQueryDataset:
         #                             data_args.dataset_language,
         #                             data_files=data_files, cache_dir=cache_dir, use_auth_token=True, trust_remote_code=True)[data_args.dataset_split]
         self.dataset = datasets.load_from_disk(data_args.dataset_name)
-        print("===="*20)
-        print("self.dataset", self.dataset)
-        i = 1
-        print(f"Query ID: {self.dataset[i]['query_id']}")
-        print(f"Query: {self.dataset[i]['query']}")
-        print("-" * 50)
+        # print("===="*20)
+        # print("self.dataset", self.dataset)
+        # i = 1
+        # print(f"Query ID: {self.dataset[i]['query_id']}")
+        # print(f"Query: {self.dataset[i]['query']}")
+        # print("-" * 50)
         self.preprocessor = QueryPreProcessor
         self.tokenizer = tokenizer
         self.q_max_len = data_args.q_max_len
@@ -149,13 +153,13 @@ class HFCorpusDataset:
         #                             data_args.dataset_language,
         #                             data_files=data_files, cache_dir=cache_dir, use_auth_token=True, trust_remote_code=True)[data_args.dataset_split]
         self.dataset = datasets.load_from_disk(data_args.dataset_name)
-        print("===="*20)
-        print("self.dataset", self.dataset)
-        i = 1
-        print(f"docid: {self.dataset[i]['docid']}")
-        print(f"title: {self.dataset[i]['title']}")
-        print(f"text: {self.dataset[i]['text']}")
-        print("-" * 50)
+        # print("===="*20)
+        # print("self.dataset", self.dataset)
+        # i = 1
+        # print(f"docid: {self.dataset[i]['docid']}")
+        # print(f"title: {self.dataset[i]['title']}")
+        # print(f"text: {self.dataset[i]['text']}")
+        # print("-" * 50)
         script_prefix = data_args.dataset_name
         if script_prefix.endswith('-corpus'):
             script_prefix = script_prefix[:-7]
@@ -245,16 +249,16 @@ class TrainDataset(Dataset):
         if len(group_negatives) > negative_size:
             negs = random.choices(group_negatives, k=negative_size)
         elif self.data_args.train_n_passages == 1:
-            print("===="*20)
-            print("ta_args.train_n_passages == 1")
+            # print("===="*20)
+            # print("ta_args.train_n_passages == 1")
             negs = []
         elif self.data_args.negative_passage_no_shuffle:
-            print("===="*20)
-            print("ta_args.negative_passage_no_shuffle")
+            # print("===="*20)
+            # print("ta_args.negative_passage_no_shuffle")
             negs = group_negatives[:negative_size]
         else:
-            print("===="*20)
-            print("* negative_size len(group_n")
+            # print("===="*20)
+            # print("* negative_size len(group_n")
             _offset = epoch * negative_size % len(group_negatives)
             negs = [x for x in group_negatives]
             random.Random(_hashed_seed).shuffle(negs)

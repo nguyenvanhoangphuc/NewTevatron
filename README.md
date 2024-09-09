@@ -7,13 +7,13 @@ ensures Tevatron's superior performance.
 *Tevatron is currently under initial development stage. We will be actively adding new features and API changes
 may happen. Suggestions, feature requests and PRs are welcomed.*
 
-## Features
+#`# Features
 - Command line interface for dense retriever training/encoding and dense index search.
 - Flexible and extendable Pytorch retriever models. 
 - Highly efficient Trainer, a subclass of  Huggingface Trainer, that naively support training performance features like mixed precision and distributed data parallel.
 - Fast and memory-efficient train/inference data access based on memory mapping with Apache Arrow through Huggingface datasets.
 - Jax/Flax training/encoding on TPU
-
+`
 ## Installation
 First install neural network and similarity search backends, 
 namely Pytorch (or Jax) and FAISS.

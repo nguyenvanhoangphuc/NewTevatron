@@ -49,6 +49,9 @@ class DataArguments:
     dataset_name: str = field(
         default=None, metadata={"help": "huggingface dataset name"}
     )
+    # eval_dataset_name: str = field(
+    #     default=None, metadata={"help": "huggingface dataset name"}
+    # )
     passage_field_separator: str = field(default=' ')
     dataset_proc_num: int = field(
         default=12, metadata={"help": "number of proc used in dataset preprocess"}
@@ -120,4 +123,8 @@ class TevatronTrainingArguments(TrainingArguments):
     grad_cache: bool = field(default=False, metadata={"help": "Use gradient cache update"})
     gc_q_chunk_size: int = field(default=1)
     gc_p_chunk_size: int = field(default=1)
+    # load_best_model_at_end: bool = field(default=True)
+    # metric_for_best_model: str = field(default='eval_loss')
+    # evaluation_strategy: str = field(default='steps')
+    # save_strategy: str = field(default='steps')
     # device: str = field(default='cpu')

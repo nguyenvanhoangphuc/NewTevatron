@@ -23,8 +23,10 @@ def main():
     parser = HfArgumentParser((ModelArguments, DataArguments, TrainingArguments))
 
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
+        print("""(sys.argv) == 2 and sys.argv[1].endswith(".j""")
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
+        print("""ning_args = parser.parse_args_into_dataclasses()""")
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
         model_args: ModelArguments
         data_args: DataArguments
@@ -75,12 +77,15 @@ def main():
     )
 
     train_dataset = HFTrainDataset(tokenizer=tokenizer, data_args=data_args,
-                                   cache_dir=data_args.data_cache_dir or model_args.cache_dir)
+                                   cache_dir=data_args.data_cache_dir or model_args.cache_dir, is_eval=False)
+    # eval_dataset = HFTrainDataset(tokenizer=tokenizer, data_args=data_args,
+    #                                cache_dir=data_args.data_cache_dir or model_args.cache_dir, is_eval=True)
     
     # if training_args.local_rank > 0:
     #     print("Waiting for main process to perform the mapping")
     #     torch.distributed.barrier()
     train_dataset = TrainDataset(data_args, train_dataset.process(), tokenizer)
+    # eval_dataset = TrainDataset(data_args, eval_dataset.process(), tokenizer)
     # if training_args.local_rank == 0:
     #     print("Loading results from main process")
     #     torch.distributed.barrier()
@@ -90,6 +95,7 @@ def main():
         model=model,
         args=training_args,
         train_dataset=train_dataset,
+        # eval_dataset=eval_dataset,
         data_collator=TrainCollator(
             tokenizer,
             max_p_len=data_args.p_max_len,
@@ -97,6 +103,7 @@ def main():
         ),
     )
     train_dataset.trainer = trainer
+    # eval_dataset.trainer = trainer
 
     trainer.train()  # TODO: resume training
     trainer.save_model()
